@@ -1,0 +1,20 @@
+spring:
+  jpa:
+    show_sql: true
+    hibernate:
+      ddl-auto: validate
+  datasource:
+    url: jdbc:postgresql://localhost:5432/car-rest-service
+    username: admin
+    password: 1111
+
+server:
+  error:
+    include-binding-errors: always
+    include-message: always
+
+logging:
+  level:
+    org:
+      springframework:
+        security: ERROR
