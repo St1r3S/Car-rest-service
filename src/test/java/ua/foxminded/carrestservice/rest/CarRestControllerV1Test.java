@@ -1,22 +1,26 @@
 package ua.foxminded.carrestservice.rest;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.junit.jupiter.api.BeforeAll;
+import jakarta.annotation.PostConstruct;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.FilterType;
+import org.springframework.context.annotation.Import;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import ua.foxminded.carrestservice.config.SecurityConfig;
 import ua.foxminded.carrestservice.model.Car;
 import ua.foxminded.carrestservice.model.Manufacturer;
 import ua.foxminded.carrestservice.service.CarService;
 import ua.foxminded.carrestservice.service.ManufacturerService;
-import ua.foxminded.carrestservice.util.AccessTokenProvider;
+import ua.foxminded.carrestservice.util.AuthTokenProvider;
 
 import java.util.Arrays;
 import java.util.List;
@@ -29,22 +33,29 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 
-@WebMvcTest(CarRestControllerV1.class)
+@WebMvcTest(controllers = {CarRestControllerV1.class},
+        includeFilters = {
+                @ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE, classes = {AuthTokenProvider.class})
+        })
+@Import(SecurityConfig.class)
 class CarRestControllerV1Test {
 
     @Autowired
     private MockMvc mockMvc;
+    @Autowired
+    private AuthTokenProvider authTokenProvider;
+
     @MockBean
     private CarService carService;
+
     @MockBean
     private ManufacturerService manufacturerService;
 
-    private static String accessToken;
+    private String accessToken;
 
-    @BeforeAll
-    static void setUp() {
-        AccessTokenProvider accessTokenProvider = AccessTokenProvider.getInstance();
-        accessToken = accessTokenProvider.getAccessToken();
+    @PostConstruct
+    void init() {
+        accessToken = authTokenProvider.getAuthToken().getToken();
     }
 
     @Test
@@ -77,7 +88,7 @@ class CarRestControllerV1Test {
         mockMvc.perform(put("/api/v1/cars/{id}", carId)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(asJsonString(updatedCar))
-                )
+                        .header("Authorization", "Bearer " + accessToken))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.model").value("Corolla"))
                 .andExpect(jsonPath("$.manufactureYear").value(2023))
@@ -132,7 +143,8 @@ class CarRestControllerV1Test {
 
         when(carService.existsById(carId)).thenReturn(true);
 
-        mockMvc.perform(delete("/api/v1/cars/{id}", carId))
+        mockMvc.perform(delete("/api/v1/cars/{id}", carId)
+                        .header("Authorization", "Bearer " + accessToken))
                 .andExpect(status().isNoContent());
     }
 
