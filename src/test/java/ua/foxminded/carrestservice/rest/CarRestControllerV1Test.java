@@ -1,6 +1,7 @@
 package ua.foxminded.carrestservice.rest;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -15,6 +16,7 @@ import ua.foxminded.carrestservice.model.Car;
 import ua.foxminded.carrestservice.model.Manufacturer;
 import ua.foxminded.carrestservice.service.CarService;
 import ua.foxminded.carrestservice.service.ManufacturerService;
+import ua.foxminded.carrestservice.util.AccessTokenProvider;
 
 import java.util.Arrays;
 import java.util.List;
@@ -32,12 +34,18 @@ class CarRestControllerV1Test {
 
     @Autowired
     private MockMvc mockMvc;
-
     @MockBean
     private CarService carService;
-
     @MockBean
     private ManufacturerService manufacturerService;
+
+    private static String accessToken;
+
+    @BeforeAll
+    static void setUp() {
+        AccessTokenProvider accessTokenProvider = AccessTokenProvider.getInstance();
+        accessToken = accessTokenProvider.getAccessToken();
+    }
 
     @Test
     void shouldCreateCar() throws Exception {
@@ -47,7 +55,8 @@ class CarRestControllerV1Test {
         when(manufacturerService.findByMake(anyString())).thenReturn(manufacturer);
         when(carService.save(any(Car.class))).thenReturn(car);
 
-        mockMvc.perform(post("/api/v1/cars/manufacturers/{manufacturer}/models/{model}/{year}", "Toyota", "Camry", 2023))
+        mockMvc.perform(post("/api/v1/cars/manufacturers/{manufacturer}/models/{model}/{year}", "Toyota", "Camry", 2023)
+                        .header("Authorization", "Bearer " + accessToken))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.model").value("Camry"))
                 .andExpect(jsonPath("$.manufactureYear").value(2023))

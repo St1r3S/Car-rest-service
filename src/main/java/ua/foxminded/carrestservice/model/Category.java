@@ -1,8 +1,11 @@
 package ua.foxminded.carrestservice.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 import java.util.List;
 
@@ -19,6 +22,9 @@ public class Category {
     @Column(name = "category", unique = true, nullable = false)
     private String category;
     @ManyToMany(mappedBy = "categories")
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
+    @JsonIgnore
     private List<Car> cars;
 
     public Category(Long id, String category) {
