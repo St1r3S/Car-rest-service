@@ -1,18 +1,25 @@
 package ua.foxminded.carrestservice.rest;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.annotation.PostConstruct;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.FilterType;
+import org.springframework.context.annotation.Import;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import ua.foxminded.carrestservice.config.SecurityConfig;
 import ua.foxminded.carrestservice.model.Manufacturer;
 import ua.foxminded.carrestservice.service.ManufacturerService;
+import ua.foxminded.carrestservice.util.AuthTokenProvider;
 
 import java.util.Arrays;
 import java.util.List;
@@ -24,14 +31,26 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@WebMvcTest(ManufacturerRestControllerV1.class)
+@WebMvcTest(controllers = {ManufacturerRestControllerV1.class},
+        includeFilters = {
+                @ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE, classes = {AuthTokenProvider.class})
+        })
+@Import(SecurityConfig.class)
 class ManufacturerRestControllerV1Test {
-    
+
     @Autowired
     private MockMvc mockMvc;
-
+    @Autowired
+    private AuthTokenProvider authTokenProvider;
     @MockBean
     private ManufacturerService manufacturerService;
+
+    private String accessToken;
+
+    @PostConstruct
+    void init() {
+        accessToken = authTokenProvider.getAuthToken().getToken();
+    }
 
     @Test
     void shouldCreateManufacturer() throws Exception {
@@ -42,7 +61,7 @@ class ManufacturerRestControllerV1Test {
         mockMvc.perform(post("/api/v1/manufacturers")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(asJsonString(manufacturer))
-                )
+                        .header(HttpHeaders.AUTHORIZATION, "Bearer " + accessToken))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.make").value("Toyota"));
 
@@ -60,7 +79,7 @@ class ManufacturerRestControllerV1Test {
         mockMvc.perform(put("/api/v1/manufacturers/{id}", manufacturerId)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(asJsonString(updatedManufacturer))
-                )
+                        .header(HttpHeaders.AUTHORIZATION, "Bearer " + accessToken))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.make").value("Honda"));
     }
@@ -106,7 +125,8 @@ class ManufacturerRestControllerV1Test {
 
         when(manufacturerService.existsById(manufacturerId)).thenReturn(true);
 
-        mockMvc.perform(delete("/api/v1/manufacturers/{id}", manufacturerId))
+        mockMvc.perform(delete("/api/v1/manufacturers/{id}", manufacturerId)
+                        .header(HttpHeaders.AUTHORIZATION, "Bearer " + accessToken))
                 .andExpect(status().isNoContent());
     }
 

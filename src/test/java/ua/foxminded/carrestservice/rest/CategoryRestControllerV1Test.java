@@ -1,18 +1,25 @@
 package ua.foxminded.carrestservice.rest;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.annotation.PostConstruct;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.FilterType;
+import org.springframework.context.annotation.Import;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import ua.foxminded.carrestservice.config.SecurityConfig;
 import ua.foxminded.carrestservice.model.Category;
 import ua.foxminded.carrestservice.service.CategoryService;
+import ua.foxminded.carrestservice.util.AuthTokenProvider;
 
 import java.util.Arrays;
 import java.util.List;
@@ -24,15 +31,26 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@WebMvcTest(CategoryRestControllerV1.class)
+@WebMvcTest(controllers = {CategoryRestControllerV1.class},
+        includeFilters = {
+                @ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE, classes = {AuthTokenProvider.class})
+        })
+@Import(SecurityConfig.class)
 class CategoryRestControllerV1Test {
 
-
+    @Autowired
+    private AuthTokenProvider authTokenProvider;
+    private String accessToken;
     @Autowired
     private MockMvc mockMvc;
 
     @MockBean
     private CategoryService categoryService;
+
+    @PostConstruct
+    void init() {
+        accessToken = authTokenProvider.getAuthToken().getToken();
+    }
 
     @Test
     void shouldCreateCategory() throws Exception {
@@ -43,7 +61,7 @@ class CategoryRestControllerV1Test {
         mockMvc.perform(post("/api/v1/categories")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(asJsonString(category))
-                )
+                        .header(HttpHeaders.AUTHORIZATION, "Bearer " + accessToken))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.category").value("Sedan"));
 
@@ -61,7 +79,7 @@ class CategoryRestControllerV1Test {
         mockMvc.perform(put("/api/v1/categories/{id}", categoryId)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(asJsonString(updatedCategory))
-                )
+                        .header(HttpHeaders.AUTHORIZATION, "Bearer " + accessToken))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.category").value("Sports Car"));
     }
@@ -107,7 +125,8 @@ class CategoryRestControllerV1Test {
 
         when(categoryService.existsById(categoryId)).thenReturn(true);
 
-        mockMvc.perform(delete("/api/v1/categories/{id}", categoryId))
+        mockMvc.perform(delete("/api/v1/categories/{id}", categoryId)
+                        .header(HttpHeaders.AUTHORIZATION, "Bearer " + accessToken))
                 .andExpect(status().isNoContent());
     }
 
