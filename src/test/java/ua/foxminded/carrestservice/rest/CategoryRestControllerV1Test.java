@@ -19,6 +19,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import ua.foxminded.carrestservice.config.SecurityConfig;
 import ua.foxminded.carrestservice.model.Category;
 import ua.foxminded.carrestservice.service.CategoryService;
+import ua.foxminded.carrestservice.util.Auth0Properties;
 import ua.foxminded.carrestservice.util.AuthTokenProvider;
 
 import java.util.Arrays;
@@ -35,7 +36,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
         includeFilters = {
                 @ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE, classes = {AuthTokenProvider.class})
         })
-@Import(SecurityConfig.class)
+@Import({SecurityConfig.class, Auth0Properties.class})
 class CategoryRestControllerV1Test {
 
     @Autowired

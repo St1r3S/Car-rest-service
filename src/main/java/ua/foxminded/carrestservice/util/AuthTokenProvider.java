@@ -1,7 +1,7 @@
 package ua.foxminded.carrestservice.util;
 
 import jakarta.annotation.PostConstruct;
-import org.springframework.beans.factory.annotation.Value;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
@@ -12,29 +12,24 @@ import ua.foxminded.carrestservice.model.auth0.Auth0Response;
 import java.util.Optional;
 
 @Component
+@RequiredArgsConstructor
 public class AuthTokenProvider {
 
     private final RestTemplate restTemplate = new RestTemplate();
-    @Value("${auth0.domain}")
-    private String domain;
-    @Value("${auth0.clientId}")
-    private String clientId;
-    @Value("${auth0.clientSecret}")
-    private String clientSecret;
-    @Value("${auth0.audience}")
-    private String audience;
+    private final Auth0Properties auth0Properties;
+
     private String tokenRequestUrl;
 
     @PostConstruct
     void init() {
-        tokenRequestUrl = "https://%s/oauth/token".formatted(domain);
+        tokenRequestUrl = "https://%s/oauth/token".formatted(auth0Properties.getDomain());
     }
 
     public AuthTokenResponse getAuthToken() {
         Auth0Request request = Auth0Request.builder()
-                .clientId(clientId)
-                .clientSecret(clientSecret)
-                .audience(audience)
+                .clientId(auth0Properties.getClientId())
+                .clientSecret(auth0Properties.getClientSecret())
+                .audience(auth0Properties.getAudience())
                 .build();
 
         ResponseEntity<Auth0Response> response = restTemplate
