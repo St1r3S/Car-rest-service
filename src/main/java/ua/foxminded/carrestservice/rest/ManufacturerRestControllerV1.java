@@ -1,5 +1,7 @@
 package ua.foxminded.carrestservice.rest;
 
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -14,21 +16,20 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/manufacturers")
+@RequiredArgsConstructor
 public class ManufacturerRestControllerV1 {
 
 
     private final ManufacturerService manufacturerService;
 
-    public ManufacturerRestControllerV1(ManufacturerService manufacturerService) {
-        this.manufacturerService = manufacturerService;
-    }
-
+    @SecurityRequirement(name = "Bearer Authentication")
     @PostMapping
     public ResponseEntity<Manufacturer> createManufacturer(@RequestBody Manufacturer manufacturer) {
         Manufacturer savedManufacturer = manufacturerService.save(manufacturer);
         return ResponseEntity.status(HttpStatus.CREATED).body(savedManufacturer);
     }
 
+    @SecurityRequirement(name = "Bearer Authentication")
     @PutMapping("/{id}")
     public ResponseEntity<Manufacturer> updateManufacturer(@PathVariable("id") Long id, @RequestBody Manufacturer manufacturer) {
         if (!manufacturerService.existsById(id)) {
@@ -61,6 +62,7 @@ public class ManufacturerRestControllerV1 {
         return ResponseEntity.ok(manufacturerPage);
     }
 
+    @SecurityRequirement(name = "Bearer Authentication")
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteManufacturer(@PathVariable("id") Long id) {
         if (!manufacturerService.existsById(id)) {

@@ -1,5 +1,7 @@
 package ua.foxminded.carrestservice.rest;
 
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -16,6 +18,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/cars")
+@RequiredArgsConstructor
 public class CarRestControllerV1 {
 
 
@@ -23,11 +26,7 @@ public class CarRestControllerV1 {
     private final ManufacturerService manufacturerService;
 
 
-    public CarRestControllerV1(CarService carService, ManufacturerService manufacturerService) {
-        this.carService = carService;
-        this.manufacturerService = manufacturerService;
-    }
-
+    @SecurityRequirement(name = "Bearer Authentication")
     @PostMapping("/manufacturers/{manufacturer}/models/{model}/{year}")
     public ResponseEntity<Car> createCar(
             @PathVariable("manufacturer") String manufacturer,
@@ -44,6 +43,7 @@ public class CarRestControllerV1 {
         return ResponseEntity.status(HttpStatus.CREATED).body(savedCar);
     }
 
+    @SecurityRequirement(name = "Bearer Authentication")
     @PutMapping("/{id}")
     public ResponseEntity<Car> updateCar(
             @PathVariable("id") Long id,
@@ -87,6 +87,7 @@ public class CarRestControllerV1 {
         return ResponseEntity.ok(carPage);
     }
 
+    @SecurityRequirement(name = "Bearer Authentication")
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteCar(@PathVariable("id") Long id) {
         if (!carService.existsById(id)) {

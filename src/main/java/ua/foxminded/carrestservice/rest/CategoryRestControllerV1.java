@@ -1,5 +1,7 @@
 package ua.foxminded.carrestservice.rest;
 
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -14,21 +16,20 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/categories")
+@RequiredArgsConstructor
 public class CategoryRestControllerV1 {
 
 
     private final CategoryService categoryService;
 
-    public CategoryRestControllerV1(CategoryService categoryService) {
-        this.categoryService = categoryService;
-    }
-
+    @SecurityRequirement(name = "Bearer Authentication")
     @PostMapping
     public ResponseEntity<Category> createCategory(@RequestBody Category category) {
         Category savedCategory = categoryService.save(category);
         return ResponseEntity.status(HttpStatus.CREATED).body(savedCategory);
     }
 
+    @SecurityRequirement(name = "Bearer Authentication")
     @PutMapping("/{id}")
     public ResponseEntity<Category> updateCategory(
             @PathVariable("id") Long id,
@@ -66,6 +67,7 @@ public class CategoryRestControllerV1 {
         return ResponseEntity.ok(categoriesPage);
     }
 
+    @SecurityRequirement(name = "Bearer Authentication")
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteCategory(@PathVariable("id") Long id) {
         if (!categoryService.existsById(id)) {

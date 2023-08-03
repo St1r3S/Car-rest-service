@@ -15,7 +15,9 @@ spring:
           jwk-set-uri: https://dev-4bh6bh3loibqhi5o.eu.auth0.com/.well-known/jwks.json
           audiences: http://car-rest-service.com
 
-
+springdoc:
+  swagger-ui:
+    path: /openapi
 
 server:
   error:
@@ -33,4 +35,3 @@ logging:
     org:
       springframework:
         security: ERROR
-
