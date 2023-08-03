@@ -7,7 +7,13 @@ import io.swagger.v3.oas.annotations.security.SecurityScheme;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
-@OpenAPIDefinition(info = @Info(title = "Car rest service", version = "1.0"))
+@OpenAPIDefinition(
+        info = @Info(
+                title = "Car rest service",
+                version = "1.0",
+                description = "API for managing cars, categories, and manufacturers"
+        )
+)
 @SecurityScheme(
         name = "Bearer Authentication",
         type = SecuritySchemeType.HTTP,

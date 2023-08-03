@@ -1,5 +1,6 @@
 package ua.foxminded.carrestservice.service.impl;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -12,13 +13,9 @@ import ua.foxminded.carrestservice.service.CarService;
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class CarServiceImpl implements CarService {
     private final CarRepository carRepository;
-
-    public CarServiceImpl(CarRepository carRepository) {
-        this.carRepository = carRepository;
-    }
-
 
     @Override
     @Transactional

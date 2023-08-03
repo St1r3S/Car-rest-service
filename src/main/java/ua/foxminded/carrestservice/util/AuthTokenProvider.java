@@ -1,6 +1,7 @@
 package ua.foxminded.carrestservice.util;
 
 import jakarta.annotation.PostConstruct;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
@@ -11,16 +12,13 @@ import ua.foxminded.carrestservice.model.auth0.Auth0Response;
 import java.util.Optional;
 
 @Component
+@RequiredArgsConstructor
 public class AuthTokenProvider {
 
     private final RestTemplate restTemplate = new RestTemplate();
     private final Auth0Properties auth0Properties;
 
     private String tokenRequestUrl;
-
-    public AuthTokenProvider(Auth0Properties auth0Properties) {
-        this.auth0Properties = auth0Properties;
-    }
 
     @PostConstruct
     void init() {
