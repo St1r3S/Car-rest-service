@@ -13,6 +13,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import ua.foxminded.carrestservice.config.SecurityConfig;
@@ -60,7 +61,7 @@ class CategoryRestControllerV1Test {
         mockMvc.perform(post("/api/v1/categories")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(asJsonString(category))
-                        .header("Authorization", "Bearer " + accessToken))
+                        .header(HttpHeaders.AUTHORIZATION, "Bearer " + accessToken))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.category").value("Sedan"));
 
@@ -78,7 +79,7 @@ class CategoryRestControllerV1Test {
         mockMvc.perform(put("/api/v1/categories/{id}", categoryId)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(asJsonString(updatedCategory))
-                        .header("Authorization", "Bearer " + accessToken))
+                        .header(HttpHeaders.AUTHORIZATION, "Bearer " + accessToken))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.category").value("Sports Car"));
     }
@@ -125,7 +126,7 @@ class CategoryRestControllerV1Test {
         when(categoryService.existsById(categoryId)).thenReturn(true);
 
         mockMvc.perform(delete("/api/v1/categories/{id}", categoryId)
-                        .header("Authorization", "Bearer " + accessToken))
+                        .header(HttpHeaders.AUTHORIZATION, "Bearer " + accessToken))
                 .andExpect(status().isNoContent());
     }
 

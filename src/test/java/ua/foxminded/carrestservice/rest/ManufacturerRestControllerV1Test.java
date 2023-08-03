@@ -13,6 +13,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import ua.foxminded.carrestservice.config.SecurityConfig;
@@ -60,7 +61,7 @@ class ManufacturerRestControllerV1Test {
         mockMvc.perform(post("/api/v1/manufacturers")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(asJsonString(manufacturer))
-                        .header("Authorization", "Bearer " + accessToken))
+                        .header(HttpHeaders.AUTHORIZATION, "Bearer " + accessToken))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.make").value("Toyota"));
 
@@ -78,7 +79,7 @@ class ManufacturerRestControllerV1Test {
         mockMvc.perform(put("/api/v1/manufacturers/{id}", manufacturerId)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(asJsonString(updatedManufacturer))
-                        .header("Authorization", "Bearer " + accessToken))
+                        .header(HttpHeaders.AUTHORIZATION, "Bearer " + accessToken))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.make").value("Honda"));
     }
@@ -125,7 +126,7 @@ class ManufacturerRestControllerV1Test {
         when(manufacturerService.existsById(manufacturerId)).thenReturn(true);
 
         mockMvc.perform(delete("/api/v1/manufacturers/{id}", manufacturerId)
-                        .header("Authorization", "Bearer " + accessToken))
+                        .header(HttpHeaders.AUTHORIZATION, "Bearer " + accessToken))
                 .andExpect(status().isNoContent());
     }
 

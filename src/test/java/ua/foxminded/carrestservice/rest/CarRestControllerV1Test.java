@@ -13,6 +13,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import ua.foxminded.carrestservice.config.SecurityConfig;
@@ -67,7 +68,7 @@ class CarRestControllerV1Test {
         when(carService.save(any(Car.class))).thenReturn(car);
 
         mockMvc.perform(post("/api/v1/cars/manufacturers/{manufacturer}/models/{model}/{year}", "Toyota", "Camry", 2023)
-                        .header("Authorization", "Bearer " + accessToken))
+                        .header(HttpHeaders.AUTHORIZATION, "Bearer " + accessToken))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.model").value("Camry"))
                 .andExpect(jsonPath("$.manufactureYear").value(2023))
@@ -88,7 +89,7 @@ class CarRestControllerV1Test {
         mockMvc.perform(put("/api/v1/cars/{id}", carId)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(asJsonString(updatedCar))
-                        .header("Authorization", "Bearer " + accessToken))
+                        .header(HttpHeaders.AUTHORIZATION, "Bearer " + accessToken))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.model").value("Corolla"))
                 .andExpect(jsonPath("$.manufactureYear").value(2023))
@@ -144,7 +145,7 @@ class CarRestControllerV1Test {
         when(carService.existsById(carId)).thenReturn(true);
 
         mockMvc.perform(delete("/api/v1/cars/{id}", carId)
-                        .header("Authorization", "Bearer " + accessToken))
+                        .header(HttpHeaders.AUTHORIZATION, "Bearer " + accessToken))
                 .andExpect(status().isNoContent());
     }
 
