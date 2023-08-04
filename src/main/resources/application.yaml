@@ -4,9 +4,9 @@ spring:
     hibernate:
       ddl-auto: validate
   datasource:
-    url: jdbc:postgresql://localhost:5432/car-rest-service
-    username: admin
-    password: 1111
+    url: ${DB_URL:jdbc:postgresql://localhost:5432/car-rest-service}
+    username: ${DB_USERNAME:admin}
+    password: ${DB_PASSWORD:1111}
   security:
     oauth2:
       resourceserver:
