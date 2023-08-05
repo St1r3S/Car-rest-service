@@ -3,6 +3,8 @@ version: '3'
 services:
   postgres:
     image: postgres:15.2
+    env_file:
+      - .env
     environment:
       POSTGRES_DB: ${POSTGRES_DB}
       POSTGRES_USER: ${POSTGRES_USER}
@@ -10,8 +12,10 @@ services:
 
   spring-app:
     image: foxminded/carservice:v1.0
+    env_file:
+      - .env
     build:
-      context: .
+      context: docker
       dockerfile: Dockerfile
     ports:
       - "8080:8080"
