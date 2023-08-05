@@ -1,8 +1,4 @@
 spring:
-  jpa:
-    show_sql: true
-    hibernate:
-      ddl-auto: validate
   datasource:
     url: ${DB_URL:jdbc:postgresql://localhost:5432/car-rest-service}
     username: ${DB_USERNAME:admin}
@@ -14,26 +10,8 @@ spring:
           issuer-uri: https://dev-4bh6bh3loibqhi5o.eu.auth0.com/
           jwk-set-uri: https://dev-4bh6bh3loibqhi5o.eu.auth0.com/.well-known/jwks.json
           audiences: http://car-rest-service.com
-#  profiles:
-#    active:
-
-springdoc:
-  swagger-ui:
-    path: /openapi
-
-server:
-  error:
-    include-binding-errors: always
-    include-message: always
-
 auth0:
   domain: ${AUTH0_DOMAIN}
   clientId: ${AUTH0_CLIENT_ID}
   clientSecret: ${AUTH0_CLIENT_SECRET}
   audience: ${AUTH0_AUDIENCE}
-
-logging:
-  level:
-    org:
-      springframework:
-        security: ERROR
