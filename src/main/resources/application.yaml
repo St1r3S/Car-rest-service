@@ -4,18 +4,16 @@ spring:
     hibernate:
       ddl-auto: validate
   datasource:
-    url: ${DB_URL:jdbc:postgresql://localhost:5432/car-rest-service}
-    username: ${DB_USERNAME:admin}
-    password: ${DB_PASSWORD:1111}
+    url: ${DB_URL}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
   security:
     oauth2:
       resourceserver:
         jwt:
-          issuer-uri: https://dev-4bh6bh3loibqhi5o.eu.auth0.com/
-          jwk-set-uri: https://dev-4bh6bh3loibqhi5o.eu.auth0.com/.well-known/jwks.json
-          audiences: http://car-rest-service.com
-#  profiles:
-#    active:
+          issuer-uri: https://${AUTH0_DOMAIN}/
+          jwk-set-uri: https://${AUTH0_DOMAIN}/.well-known/jwks.json
+          audiences: ${AUTH0_AUDIENCE}
 
 springdoc:
   swagger-ui:
@@ -31,9 +29,3 @@ auth0:
   clientId: ${AUTH0_CLIENT_ID}
   clientSecret: ${AUTH0_CLIENT_SECRET}
   audience: ${AUTH0_AUDIENCE}
-
-logging:
-  level:
-    org:
-      springframework:
-        security: ERROR

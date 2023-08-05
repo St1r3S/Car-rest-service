@@ -1,0 +1,24 @@
+version: '3'
+
+services:
+  postgres:
+    image: postgres:15.2
+    environment:
+      POSTGRES_DB: ${CI_POSTGRES_DB}
+      POSTGRES_USER: ${CI_POSTGRES_USER}
+      POSTGRES_PASSWORD: ${CI_POSTGRES_PASSWORD}
+
+  spring-app:
+    image: docker.io/library/car-rest-service:1.0
+    ports:
+      - "8080:8080"
+    environment:
+      DB_URL: jdbc:postgresql://postgres:5432/${CI_POSTGRES_DB}
+      DB_USERNAME: ${CI_POSTGRES_USER}
+      DB_PASSWORD: ${CI_POSTGRES_PASSWORD}
+      AUTH0_DOMAIN: ${CI_AUTH0_DOMAIN}
+      AUTH0_CLIENT_ID: ${CI_AUTH0_CLIENT_ID}
+      AUTH0_CLIENT_SECRET: ${CI_AUTH0_CLIENT_SECRET}
+      AUTH0_AUDIENCE: ${CI_AUTH0_AUDIENCE}
+    depends_on:
+      - postgres

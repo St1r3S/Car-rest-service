@@ -1,8 +1,8 @@
 spring:
   datasource:
-    url: ${DB_URL:jdbc:postgresql://localhost:5432/car-rest-service}
-    username: ${DB_USERNAME:admin}
-    password: ${DB_PASSWORD:1111}
+    url: postgresql://localhost:5432/car-rest-service
+    username: admin
+    password: 1111
   security:
     oauth2:
       resourceserver:
@@ -11,7 +11,13 @@ spring:
           jwk-set-uri: https://dev-4bh6bh3loibqhi5o.eu.auth0.com/.well-known/jwks.json
           audiences: http://car-rest-service.com
 auth0:
-  domain: ${AUTH0_DOMAIN}
-  clientId: ${AUTH0_CLIENT_ID}
-  clientSecret: ${AUTH0_CLIENT_SECRET}
-  audience: ${AUTH0_AUDIENCE}
+  domain: dev-4bh6bh3loibqhi5o.eu.auth0.com
+  clientId: iSnXUswhEkfa1YWgGCpcLSsF7k3Hdv1s
+  clientSecret: 9XgmrWCRz9lPZ_vTNOp5rzQHPBcOQQtpy-mIf-UEekQvcSEl2d4VQ6yUuWI6ykTf
+  audience: http://car-rest-service.com
+
+logging:
+  level:
+    org:
+      springframework:
+        security: ERROR
